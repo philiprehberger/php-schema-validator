@@ -2,7 +2,6 @@
 
 [![Tests](https://github.com/philiprehberger/php-schema-validator/actions/workflows/tests.yml/badge.svg)](https://github.com/philiprehberger/php-schema-validator/actions/workflows/tests.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/philiprehberger/php-schema-validator.svg)](https://packagist.org/packages/philiprehberger/php-schema-validator)
-[![Total Downloads](https://img.shields.io/packagist/dt/philiprehberger/php-schema-validator.svg)](https://packagist.org/packages/philiprehberger/php-schema-validator)
 [![PHP Version Require](https://img.shields.io/packagist/php-v/philiprehberger/php-schema-validator.svg)](https://packagist.org/packages/philiprehberger/php-schema-validator)
 [![License](https://img.shields.io/github/license/philiprehberger/php-schema-validator)](LICENSE)
 
