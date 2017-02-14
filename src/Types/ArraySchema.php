@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhilipRehberger\SchemaValidator\Types;
 
+use PhilipRehberger\SchemaValidator\Concerns\HasCustomValidation;
 use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
 
 /**
@@ -11,6 +12,8 @@ use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
  */
 class ArraySchema implements SchemaType
 {
+    use HasCustomValidation;
+
     private bool $isOptional = false;
 
     private bool $isNullable = false;
@@ -68,6 +71,8 @@ class ArraySchema implements SchemaType
             return ["{$prefix} must not be null"];
         }
 
+        $value = $this->applyTransform($value);
+
         if (! is_array($value) || ($value !== [] && ! array_is_list($value))) {
             return ["{$prefix} must be an array"];
         }
@@ -76,6 +81,10 @@ class ArraySchema implements SchemaType
             $itemPath = "{$prefix}[{$index}]";
             $itemErrors = $this->itemSchema->validate($item, $itemPath);
             $errors = [...$errors, ...$itemErrors];
+        }
+
+        if ($errors === []) {
+            $errors = [...$errors, ...$this->runCustomValidator($value, $prefix)];
         }
 
         return $errors;

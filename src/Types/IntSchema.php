@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhilipRehberger\SchemaValidator\Types;
 
+use PhilipRehberger\SchemaValidator\Concerns\HasCustomValidation;
 use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
 
 /**
@@ -11,6 +12,8 @@ use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
  */
 class IntSchema implements SchemaType
 {
+    use HasCustomValidation;
+
     private ?int $min = null;
 
     private ?int $max = null;
@@ -87,6 +90,8 @@ class IntSchema implements SchemaType
             return $errors;
         }
 
+        $value = $this->applyTransform($value);
+
         if (! is_int($value)) {
             $errors[] = "{$prefix} must be an integer";
 
@@ -99,6 +104,10 @@ class IntSchema implements SchemaType
 
         if ($this->max !== null && $value > $this->max) {
             $errors[] = "{$prefix} must be at most {$this->max}";
+        }
+
+        if ($errors === []) {
+            $errors = [...$errors, ...$this->runCustomValidator($value, $prefix)];
         }
 
         return $errors;

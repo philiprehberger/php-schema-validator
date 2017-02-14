@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhilipRehberger\SchemaValidator\Types;
 
+use PhilipRehberger\SchemaValidator\Concerns\HasCustomValidation;
 use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
 
 /**
@@ -11,6 +12,8 @@ use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
  */
 class BoolSchema implements SchemaType
 {
+    use HasCustomValidation;
+
     private bool $isOptional = false;
 
     private bool $isNullable = false;
@@ -60,10 +63,12 @@ class BoolSchema implements SchemaType
             return ["{$prefix} must not be null"];
         }
 
+        $value = $this->applyTransform($value);
+
         if (! is_bool($value)) {
             return ["{$prefix} must be a boolean"];
         }
 
-        return [];
+        return $this->runCustomValidator($value, $prefix);
     }
 }

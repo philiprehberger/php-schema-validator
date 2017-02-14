@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhilipRehberger\SchemaValidator\Types;
 
+use PhilipRehberger\SchemaValidator\Concerns\HasCustomValidation;
 use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
 
 /**
@@ -11,6 +12,8 @@ use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
  */
 class FloatSchema implements SchemaType
 {
+    use HasCustomValidation;
+
     private ?float $min = null;
 
     private ?float $max = null;
@@ -87,6 +90,8 @@ class FloatSchema implements SchemaType
             return $errors;
         }
 
+        $value = $this->applyTransform($value);
+
         if (! is_float($value) && ! is_int($value)) {
             $errors[] = "{$prefix} must be a float";
 
@@ -101,6 +106,10 @@ class FloatSchema implements SchemaType
 
         if ($this->max !== null && $floatValue > $this->max) {
             $errors[] = "{$prefix} must be at most {$this->max}";
+        }
+
+        if ($errors === []) {
+            $errors = [...$errors, ...$this->runCustomValidator($floatValue, $prefix)];
         }
 
         return $errors;

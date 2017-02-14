@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhilipRehberger\SchemaValidator\Types;
 
+use PhilipRehberger\SchemaValidator\Concerns\HasCustomValidation;
 use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
 
 /**
@@ -11,6 +12,8 @@ use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
  */
 class EnumSchema implements SchemaType
 {
+    use HasCustomValidation;
+
     private bool $isOptional = false;
 
     private bool $isNullable = false;
@@ -69,6 +72,8 @@ class EnumSchema implements SchemaType
             return ["{$prefix} must not be null"];
         }
 
+        $value = $this->applyTransform($value);
+
         if (! in_array($value, $this->values, true)) {
             $allowed = implode(', ', array_map(
                 static fn (mixed $v): string => is_string($v) ? "\"{$v}\"" : (string) $v,
@@ -78,6 +83,6 @@ class EnumSchema implements SchemaType
             return ["{$prefix} must be one of [{$allowed}]"];
         }
 
-        return [];
+        return $this->runCustomValidator($value, $prefix);
     }
 }
