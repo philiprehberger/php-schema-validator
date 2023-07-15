@@ -3,6 +3,7 @@
 [![Tests](https://github.com/philiprehberger/php-schema-validator/actions/workflows/tests.yml/badge.svg)](https://github.com/philiprehberger/php-schema-validator/actions/workflows/tests.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/philiprehberger/php-schema-validator.svg)](https://packagist.org/packages/philiprehberger/php-schema-validator)
 [![License](https://img.shields.io/github/license/philiprehberger/php-schema-validator)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Fluent data schema validator with nested objects, arrays, and dot-notation errors.
 
