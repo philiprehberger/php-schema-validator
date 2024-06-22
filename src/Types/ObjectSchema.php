@@ -22,6 +22,9 @@ class ObjectSchema implements SchemaType
     /** @var array<callable(array<string, mixed>): ?string> */
     private array $crossFieldValidators = [];
 
+    /** @var array<array{field: string, value: mixed, schema: array<string, SchemaType>}> */
+    private array $conditionalRules = [];
+
     /**
      * Create a new object schema.
      *
@@ -75,6 +78,42 @@ class ObjectSchema implements SchemaType
     }
 
     /**
+     * Conditionally validate additional fields when a field matches a given value.
+     *
+     * @param  array<string, SchemaType>  $thenSchema
+     */
+    public function when(string $field, mixed $value, array $thenSchema): static
+    {
+        $this->conditionalRules[] = [
+            'field' => $field,
+            'value' => $value,
+            'schema' => $thenSchema,
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Create a new ObjectSchema combining fields from this schema with additional fields.
+     *
+     * @param  array<string, SchemaType>  $additionalFields
+     */
+    public function extend(array $additionalFields): static
+    {
+        $merged = array_merge($this->fields, $additionalFields);
+
+        $new = new static($merged);
+
+        // Copy over cross-field validators and conditional rules
+        $new->crossFieldValidators = $this->crossFieldValidators;
+        $new->conditionalRules = $this->conditionalRules;
+        $new->isOptional = $this->isOptional;
+        $new->isNullable = $this->isNullable;
+
+        return $new;
+    }
+
+    /**
      * Validate the given value and return an array of error messages.
      *
      * @return array<string>
@@ -112,6 +151,26 @@ class ObjectSchema implements SchemaType
 
             $fieldErrors = $schema->validate($value[$field], $fieldPath);
             $errors = [...$errors, ...$fieldErrors];
+        }
+
+        foreach ($this->conditionalRules as $rule) {
+            if (array_key_exists($rule['field'], $value) && $value[$rule['field']] === $rule['value']) {
+                foreach ($rule['schema'] as $field => $schema) {
+                    $fieldPath = $path !== '' ? "{$path}.{$field}" : $field;
+                    $isOptionalField = method_exists($schema, 'isOptional') && $schema->isOptional();
+
+                    if (! array_key_exists($field, $value)) {
+                        if (! $isOptionalField) {
+                            $errors[] = "{$fieldPath} is required";
+                        }
+
+                        continue;
+                    }
+
+                    $fieldErrors = $schema->validate($value[$field], $fieldPath);
+                    $errors = [...$errors, ...$fieldErrors];
+                }
+            }
         }
 
         if ($errors === []) {

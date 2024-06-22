@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-03-27
+
+### Added
+- Conditional field validation via `ObjectSchema::when()`
+- Schema composition via `ObjectSchema::extend()`
+- Custom error messages via `ValidationResult::withMessages()`
+
 ## [1.1.4] - 2026-03-23
 
 ### Changed

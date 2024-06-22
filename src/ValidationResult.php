@@ -51,4 +51,36 @@ final readonly class ValidationResult
     {
         return $this->errors[0] ?? null;
     }
+
+    /**
+     * Replace error messages for matching field paths with custom messages.
+     *
+     * The $messages array maps field paths to custom error strings.
+     * Any error that starts with a matching field path will be replaced.
+     *
+     * @param  array<string, string>  $messages
+     */
+    public function withMessages(array $messages): self
+    {
+        $replaced = [];
+
+        foreach ($this->errors as $error) {
+            $matched = false;
+
+            foreach ($messages as $field => $message) {
+                if (str_starts_with($error, $field.' ')) {
+                    $replaced[] = $message;
+                    $matched = true;
+
+                    break;
+                }
+            }
+
+            if (! $matched) {
+                $replaced[] = $error;
+            }
+        }
+
+        return new self($replaced);
+    }
 }

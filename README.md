@@ -1,12 +1,15 @@
 # PHP Schema Validator
 
 [![Tests](https://github.com/philiprehberger/php-schema-validator/actions/workflows/tests.yml/badge.svg)](https://github.com/philiprehberger/php-schema-validator/actions/workflows/tests.yml)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/philiprehberger/php-schema-validator.svg)](https://packagist.org/packages/philiprehberger/php-schema-validator)
+[![Packagist Version](https://img.shields.io/packagist/v/philiprehberger/php-schema-validator.svg)](https://packagist.org/packages/philiprehberger/php-schema-validator)
+[![GitHub Release](https://img.shields.io/github/v/release/philiprehberger/php-schema-validator)](https://github.com/philiprehberger/php-schema-validator/releases)
+[![Last Updated](https://img.shields.io/github/last-commit/philiprehberger/php-schema-validator)](https://github.com/philiprehberger/php-schema-validator/commits/main)
 [![License](https://img.shields.io/github/license/philiprehberger/php-schema-validator)](LICENSE)
+[![Bug Reports](https://img.shields.io/github/issues/philiprehberger/php-schema-validator/bug)](https://github.com/philiprehberger/php-schema-validator/issues?q=label%3Abug)
+[![Feature Requests](https://img.shields.io/github/issues/philiprehberger/php-schema-validator/enhancement)](https://github.com/philiprehberger/php-schema-validator/issues?q=label%3Aenhancement)
 [![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Fluent data schema validator with nested objects, arrays, and dot-notation errors.
-
 
 ## Requirements
 
@@ -17,7 +20,6 @@ Fluent data schema validator with nested objects, arrays, and dot-notation error
 ```bash
 composer require philiprehberger/php-schema-validator
 ```
-
 
 ## Usage
 
@@ -190,6 +192,46 @@ $result->errors();
 
 Cross-field validators only run when all individual field validations pass.
 
+### Conditional Fields
+
+Use `when()` on an `ObjectSchema` to conditionally require additional fields based on the value of another field.
+
+```php
+$schema = Schema::object([
+    'type' => Schema::string(),
+    'email' => Schema::string()->email(),
+])->when('type', 'business', [
+    'company_name' => Schema::string()->min(1),
+    'tax_id' => Schema::string(),
+]);
+
+// When type is 'business', company_name and tax_id are also validated
+// When type is anything else, those fields are ignored
+```
+
+### Schema Composition
+
+Use `extend()` to create a new schema that combines the fields of the current schema with additional fields.
+
+```php
+$base = Schema::object(['name' => Schema::string(), 'email' => Schema::string()->email()]);
+$admin = $base->extend(['role' => Schema::string(), 'permissions' => Schema::arrayOf(Schema::string())]);
+// $admin validates name, email, role, and permissions
+// $base is unchanged
+```
+
+### Custom Error Messages
+
+Use `withMessages()` on a `ValidationResult` to replace default error messages for specific fields.
+
+```php
+$result = $schema->validateData($data);
+
+$result = $result->withMessages([
+    'name' => 'Please enter your full name',
+    'email' => 'A valid email address is required',
+]);
+```
 
 ## API
 
@@ -214,12 +256,15 @@ Cross-field validators only run when all individual field validations pass.
 | `fails()` | `bool` | True if validation failed |
 | `errors()` | `array<string>` | All error messages |
 | `firstError()` | `?string` | First error message or null |
+| `withMessages(array $messages)` | `ValidationResult` | Replace errors for matching field paths with custom messages |
 
 ### `ObjectSchema` extras
 
 | Method | Description |
 |--------|-------------|
 | `crossField(callable $validator)` | Add a cross-field validator (receives full data array, returns `?string`) |
+| `when(string $field, mixed $value, array $thenSchema)` | Conditionally validate additional fields when a field matches a value |
+| `extend(array $additionalFields)` | Create a new schema combining current fields with additional fields |
 
 ### Common Modifiers
 
@@ -232,16 +277,19 @@ All schema types support:
 | `custom(callable $validator)` | Add a custom validation callback (receives value, returns `?string`) |
 | `transform(callable $transformer)` | Transform the value before validation |
 
-
 ## Development
 
 ```bash
 composer install
 vendor/bin/phpunit
 vendor/bin/pint --test
-vendor/bin/phpstan analyse
 ```
+
+## Support
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Philip%20Rehberger-blue?logo=linkedin)](https://www.linkedin.com/in/philiprehberger)
+[![Packages](https://img.shields.io/badge/More%20Packages-philiprehberger-orange?logo=github)](https://github.com/philiprehberger/packages)
 
 ## License
 
-MIT
+[MIT](LICENSE)
