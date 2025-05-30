@@ -1,13 +1,8 @@
 # PHP Schema Validator
 
 [![Tests](https://github.com/philiprehberger/php-schema-validator/actions/workflows/tests.yml/badge.svg)](https://github.com/philiprehberger/php-schema-validator/actions/workflows/tests.yml)
-[![Packagist Version](https://img.shields.io/packagist/v/philiprehberger/php-schema-validator.svg)](https://packagist.org/packages/philiprehberger/php-schema-validator)
-[![GitHub Release](https://img.shields.io/github/v/release/philiprehberger/php-schema-validator)](https://github.com/philiprehberger/php-schema-validator/releases)
-[![Last Updated](https://img.shields.io/github/last-commit/philiprehberger/php-schema-validator)](https://github.com/philiprehberger/php-schema-validator/commits/main)
-[![License](https://img.shields.io/github/license/philiprehberger/php-schema-validator)](LICENSE)
-[![Bug Reports](https://img.shields.io/github/issues/philiprehberger/php-schema-validator/bug)](https://github.com/philiprehberger/php-schema-validator/issues?q=label%3Abug)
-[![Feature Requests](https://img.shields.io/github/issues/philiprehberger/php-schema-validator/enhancement)](https://github.com/philiprehberger/php-schema-validator/issues?q=label%3Aenhancement)
-[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/philiprehberger/php-schema-validator.svg)](https://packagist.org/packages/philiprehberger/php-schema-validator)
+[![Last updated](https://img.shields.io/github/last-commit/philiprehberger/php-schema-validator)](https://github.com/philiprehberger/php-schema-validator/commits/main)
 
 Fluent data schema validator with nested objects, arrays, and dot-notation errors.
 
@@ -287,8 +282,21 @@ vendor/bin/pint --test
 
 ## Support
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Philip%20Rehberger-blue?logo=linkedin)](https://www.linkedin.com/in/philiprehberger)
-[![Packages](https://img.shields.io/badge/More%20Packages-philiprehberger-orange?logo=github)](https://github.com/philiprehberger/packages)
+If you find this project useful:
+
+⭐ [Star the repo](https://github.com/philiprehberger/php-schema-validator)
+
+🐛 [Report issues](https://github.com/philiprehberger/php-schema-validator/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+
+💡 [Suggest features](https://github.com/philiprehberger/php-schema-validator/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)
+
+❤️ [Sponsor development](https://github.com/sponsors/philiprehberger)
+
+🌐 [All Open Source Projects](https://philiprehberger.com/open-source-packages)
+
+💻 [GitHub Profile](https://github.com/philiprehberger)
+
+🔗 [LinkedIn Profile](https://www.linkedin.com/in/philiprehberger)
 
 ## License
 
