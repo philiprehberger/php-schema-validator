@@ -1,7 +1,9 @@
 {
     "name": "philiprehberger/php-schema-validator",
     "description": "Fluent data schema validator with nested objects, arrays, and dot-notation errors",
+    "type": "library",
     "keywords": ["validation", "schema", "validator", "fluent", "php"],
+    "homepage": "https://github.com/philiprehberger/php-schema-validator",
     "license": "MIT",
     "authors": [
         {
@@ -29,6 +31,11 @@
     },
     "config": {
         "sort-packages": true
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "lint": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
