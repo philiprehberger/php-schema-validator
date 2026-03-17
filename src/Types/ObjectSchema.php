@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhilipRehberger\SchemaValidator\Types;
 
+use PhilipRehberger\SchemaValidator\Concerns\HasCustomValidation;
 use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
 use PhilipRehberger\SchemaValidator\ValidationResult;
 
@@ -12,9 +13,14 @@ use PhilipRehberger\SchemaValidator\ValidationResult;
  */
 class ObjectSchema implements SchemaType
 {
+    use HasCustomValidation;
+
     private bool $isOptional = false;
 
     private bool $isNullable = false;
+
+    /** @var array<callable(array<string, mixed>): ?string> */
+    private array $crossFieldValidators = [];
 
     /**
      * Create a new object schema.
@@ -54,6 +60,21 @@ class ObjectSchema implements SchemaType
     }
 
     /**
+     * Add a cross-field validation callback.
+     *
+     * The callable receives the full data array and should return null if valid,
+     * or a string error message if invalid.
+     *
+     * @param  callable(array<string, mixed>): ?string  $validator
+     */
+    public function crossField(callable $validator): static
+    {
+        $this->crossFieldValidators[] = $validator;
+
+        return $this;
+    }
+
+    /**
      * Validate the given value and return an array of error messages.
      *
      * @return array<string>
@@ -70,6 +91,8 @@ class ObjectSchema implements SchemaType
 
             return ["{$prefix} must not be null"];
         }
+
+        $value = $this->applyTransform($value);
 
         if (! is_array($value)) {
             return ["{$prefix} must be an object"];
@@ -89,6 +112,18 @@ class ObjectSchema implements SchemaType
 
             $fieldErrors = $schema->validate($value[$field], $fieldPath);
             $errors = [...$errors, ...$fieldErrors];
+        }
+
+        if ($errors === []) {
+            foreach ($this->crossFieldValidators as $validator) {
+                $error = $validator($value);
+
+                if ($error !== null) {
+                    $errors[] = $error;
+                }
+            }
+
+            $errors = [...$errors, ...$this->runCustomValidator($value, $prefix)];
         }
 
         return $errors;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhilipRehberger\SchemaValidator\Types;
 
+use PhilipRehberger\SchemaValidator\Concerns\HasCustomValidation;
 use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
 
 /**
@@ -11,6 +12,8 @@ use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
  */
 class StringSchema implements SchemaType
 {
+    use HasCustomValidation;
+
     private ?int $min = null;
 
     private ?int $max = null;
@@ -135,6 +138,8 @@ class StringSchema implements SchemaType
             return $errors;
         }
 
+        $value = $this->applyTransform($value);
+
         if (! is_string($value)) {
             $errors[] = "{$prefix} must be a string";
 
@@ -163,6 +168,10 @@ class StringSchema implements SchemaType
 
         if ($this->regex !== null && preg_match($this->regex, $value) !== 1) {
             $errors[] = "{$prefix} must match the pattern {$this->regex}";
+        }
+
+        if ($errors === []) {
+            $errors = [...$errors, ...$this->runCustomValidator($value, $prefix)];
         }
 
         return $errors;

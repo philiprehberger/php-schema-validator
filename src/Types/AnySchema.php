@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhilipRehberger\SchemaValidator\Types;
 
+use PhilipRehberger\SchemaValidator\Concerns\HasCustomValidation;
 use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
 
 /**
@@ -11,6 +12,8 @@ use PhilipRehberger\SchemaValidator\Contracts\SchemaType;
  */
 class AnySchema implements SchemaType
 {
+    use HasCustomValidation;
+
     private bool $isOptional = false;
 
     private bool $isNullable = false;
@@ -56,6 +59,10 @@ class AnySchema implements SchemaType
             return ["{$prefix} must not be null"];
         }
 
-        return [];
+        if ($value !== null) {
+            $value = $this->applyTransform($value);
+        }
+
+        return $this->runCustomValidator($value, $prefix);
     }
 }

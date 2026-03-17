@@ -112,6 +112,92 @@ Schema::any();           // accepts any non-null value
 Schema::any()->nullable(); // accepts anything including null
 ```
 
+### Custom Validation Rules
+
+Add custom validation logic to any schema type using `custom()`. The callable receives the value and returns `null` if valid, or an error message string if invalid.
+
+```php
+$schema = Schema::object([
+    'username' => Schema::string()->min(3)->custom(function (string $value): ?string {
+        if (str_starts_with($value, 'admin')) {
+            return 'must not start with "admin"';
+        }
+
+        return null;
+    }),
+    'age' => Schema::int()->min(0)->custom(function (int $value): ?string {
+        if ($value % 2 !== 0) {
+            return 'must be an even number';
+        }
+
+        return null;
+    }),
+]);
+
+$result = $schema->validateData(['username' => 'admin_user', 'age' => 25]);
+$result->errors();
+// ["username must not start with "admin"", "age must be an even number"]
+```
+
+Custom validators only run when all built-in checks pass.
+
+### Value Transformers
+
+Use `transform()` to normalize a value before validation. The callable receives the raw value and returns the transformed value.
+
+```php
+$schema = Schema::object([
+    'email' => Schema::string()->email()->transform(fn (mixed $v) => strtolower(trim($v))),
+    'tags'  => Schema::arrayOf(Schema::string())->transform(fn (mixed $v) => array_unique($v)),
+]);
+
+$result = $schema->validateData([
+    'email' => '  Alice@Example.COM  ',
+    'tags'  => ['php', 'laravel', 'php'],
+]);
+
+$result->passes(); // true — email was trimmed and lowered before validation
+```
+
+Transformers run before any type or constraint checks (but after the null check).
+
+### Cross-Field Validation
+
+Use `crossField()` on an `ObjectSchema` to validate relationships between fields. Each callable receives the full data array and returns `null` if valid, or an error message string.
+
+```php
+$schema = Schema::object([
+    'password'         => Schema::string()->min(8),
+    'password_confirm' => Schema::string(),
+    'start_date'       => Schema::string(),
+    'end_date'         => Schema::string(),
+])->crossField(function (array $data): ?string {
+    if ($data['password'] !== $data['password_confirm']) {
+        return 'password_confirm must match password';
+    }
+
+    return null;
+})->crossField(function (array $data): ?string {
+    if ($data['start_date'] >= $data['end_date']) {
+        return 'end_date must be after start_date';
+    }
+
+    return null;
+});
+
+$result = $schema->validateData([
+    'password'         => 'secret123',
+    'password_confirm' => 'different',
+    'start_date'       => '2026-03-20',
+    'end_date'         => '2026-03-10',
+]);
+
+$result->errors();
+// ["password_confirm must match password", "end_date must be after start_date"]
+```
+
+Cross-field validators only run when all individual field validations pass.
+
 ---
 
 ## API
@@ -138,6 +224,12 @@ Schema::any()->nullable(); // accepts anything including null
 | `errors()` | `array<string>` | All error messages |
 | `firstError()` | `?string` | First error message or null |
 
+### `ObjectSchema` extras
+
+| Method | Description |
+|--------|-------------|
+| `crossField(callable $validator)` | Add a cross-field validator (receives full data array, returns `?string`) |
+
 ### Common Modifiers
 
 All schema types support:
@@ -146,6 +238,8 @@ All schema types support:
 |--------|-------------|
 | `optional()` | Field may be absent from the parent object |
 | `nullable()` | Field may be null |
+| `custom(callable $validator)` | Add a custom validation callback (receives value, returns `?string`) |
+| `transform(callable $transformer)` | Transform the value before validation |
 
 ---
 
