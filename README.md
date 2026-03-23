@@ -9,12 +9,7 @@ Fluent data schema validator with nested objects, arrays, and dot-notation error
 
 ## Requirements
 
-| Dependency | Version |
-|------------|---------|
-| PHP        | ^8.2    |
-
-No external dependencies required.
-
+- PHP 8.2+
 
 ## Installation
 
