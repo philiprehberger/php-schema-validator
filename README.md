@@ -6,7 +6,6 @@
 
 Fluent data schema validator with nested objects, arrays, and dot-notation errors.
 
----
 
 ## Requirements
 
@@ -16,7 +15,6 @@ Fluent data schema validator with nested objects, arrays, and dot-notation error
 
 No external dependencies required.
 
----
 
 ## Installation
 
@@ -24,7 +22,6 @@ No external dependencies required.
 composer require philiprehberger/php-schema-validator
 ```
 
----
 
 ## Usage
 
@@ -197,7 +194,6 @@ $result->errors();
 
 Cross-field validators only run when all individual field validations pass.
 
----
 
 ## API
 
@@ -240,7 +236,6 @@ All schema types support:
 | `custom(callable $validator)` | Add a custom validation callback (receives value, returns `?string`) |
 | `transform(callable $transformer)` | Transform the value before validation |
 
----
 
 ## Development
 
