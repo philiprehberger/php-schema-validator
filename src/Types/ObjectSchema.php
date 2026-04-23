@@ -98,11 +98,11 @@ class ObjectSchema implements SchemaType
      *
      * @param  array<string, SchemaType>  $additionalFields
      */
-    public function extend(array $additionalFields): static
+    public function extend(array $additionalFields): self
     {
         $merged = array_merge($this->fields, $additionalFields);
 
-        $new = new static($merged);
+        $new = new self($merged);
 
         // Copy over cross-field validators and conditional rules
         $new->crossFieldValidators = $this->crossFieldValidators;
